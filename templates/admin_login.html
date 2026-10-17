@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Portal Login - The E-Library{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-8">
+            <div class="auth-card border-danger border-opacity-25">
+                <div class="auth-header" style="background: linear-gradient(135deg, #450a0a 0%, #1e1b4b 100%);">
+                    <div class="brand-icon mx-auto mb-2" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); width: 48px; height: 48px; font-size: 1.25rem;">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">Library Administrator</h3>
+                    <p class="text-light text-opacity-75 small mb-0">Authorized personnel & librarian control access</p>
+                </div>
+
+                <div class="p-4 p-md-5">
+                    <form method="POST" action="{{ url_for('admin_login') }}">
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="adminEmail" class="form-label fw-semibold text-dark small">Admin Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-user-shield"></i></span>
+                                <input type="email" class="form-control border-start-0 ps-0" id="adminEmail" name="email" placeholder="admin@elibrary.com" value="{{ email or '' }}" required>
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-4">
+                            <label for="adminPassword" class="form-label fw-semibold text-dark small">Admin Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-key"></i></span>
+                                <input type="password" class="form-control border-start-0 ps-0" id="adminPassword" name="password" placeholder="Enter admin password" required>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-danger w-100 py-2 rounded-pill fw-semibold shadow-sm mb-3">
+                            <i class="fa-solid fa-lock-open me-1"></i> Authenticate & Enter Admin Portal
+                        </button>
+
+                        <!-- Predefined Demo Credentials Helper Box -->
+                        <div class="card bg-light border-0 p-3 rounded-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <small class="fw-bold text-danger"><i class="fa-solid fa-key me-1"></i> Predefined Admin Credentials:</small>
+                                <button type="button" id="fillAdminCredentials" class="btn btn-sm btn-link text-danger text-decoration-none p-0 fs-7">
+                                    <i class="fa-solid fa-bolt me-1"></i> Auto-fill
+                                </button>
+                            </div>
+                            <div class="font-monospace small text-dark">
+                                <div>Email: <strong>admin@elibrary.com</strong></div>
+                                <div>Password: <strong>admin123</strong></div>
+                            </div>
+                        </div>
+
+                        <div class="text-center small text-muted">
+                            <a href="{{ url_for('login') }}" class="text-decoration-none text-muted">
+                                <i class="fa-solid fa-arrow-left me-1"></i> Back to Student Login
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}AI-Based Book Recommendations - The E-Library{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- AI Header Hero Card -->
+    <div class="card bg-library-dark text-white border-0 rounded-4 shadow-sm p-4 p-md-5 mb-4 position-relative overflow-hidden">
+        <div class="row align-items-center position-relative z-1">
+            <div class="col-lg-8">
+                <div class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-2">
+                    <i class="fa-solid fa-brain me-1"></i> Content-Based Machine Intelligence
+                </div>
+                <h1 class="h2 fw-bold mb-2">AI-Based Book Recommendation System</h1>
+                <p class="text-light text-opacity-75 mb-3 leading-relaxed">
+                    Personalized reading suggestions generated locally through Content-Based Filtering. Our algorithm computes real-time relevance scores by mapping your registered academic interests, active borrowing history, and computer science curriculum associations.
+                </p>
+
+                <!-- Student Profile Tags -->
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <span class="small text-light text-opacity-75 fw-semibold"><i class="fa-solid fa-user-gear me-1 text-accent"></i> Your Active Interests:</span>
+                    {% if interests %}
+                        {% for int_item in interests %}
+                            <span class="badge bg-white bg-opacity-20 text-white rounded-pill px-3 py-1 small">
+                                <i class="fa-solid fa-check fs-7 me-1 text-warning"></i> {{ int_item }}
+                            </span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="badge bg-secondary rounded-pill px-3 py-1 small">No interests set</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                <div class="card bg-white bg-opacity-10 border border-white border-opacity-20 p-3 rounded-3 text-start">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="small text-light text-opacity-75">Algorithm Type:</span>
+                        <span class="badge bg-accent text-white rounded-pill">Content-Based</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="small text-light text-opacity-75">Matching Engine:</span>
+                        <span class="badge bg-success rounded-pill">Vector Scoring</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="small text-light text-opacity-75">Cloud Dependency:</span>
+                        <span class="badge bg-info text-dark rounded-pill">0% (Local Python)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendations Grid -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="h4 fw-bold text-primary-dark mb-0">Recommended for You</h3>
+            <p class="text-muted small mb-0">Books ranked in descending order of relevance score</p>
+        </div>
+        <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
+            {{ recommendations|length }} Recommendation{% if recommendations|length != 1 %}s{% endif %}
+        </span>
+    </div>
+
+    {% if recommendations %}
+    <div class="row g-4">
+        {% for book in recommendations %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 border-0 shadow-sm rounded-4 recommendation-card bg-white d-flex flex-column overflow-hidden">
+                <!-- Top Bar with Match Score, Price and Status -->
+                <div class="p-3 bg-light border-bottom d-flex justify-content-between align-items-center">
+                    <span class="ai-pill">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> {{ book.match_percentage }}% Match
+                    </span>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-white text-success border border-success border-opacity-25 rounded-pill px-2 py-1 small fw-bold" title="Price">
+                            ₹{{ "%.2f"|format(book.price or 450.0) }}
+                        </span>
+                        {% if book.available == 1 %}
+                            <span class="badge badge-available rounded-pill px-2 py-1 small">
+                                <i class="fa-solid fa-circle-check me-1"></i> Available
+                            </span>
+                        {% else %}
+                            <span class="badge badge-unavailable rounded-pill px-2 py-1 small">
+                                <i class="fa-solid fa-circle-xmark me-1"></i> Not Available
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Card Body -->
+                <div class="p-4 flex-grow-1 d-flex flex-column">
+                    <!-- Explainable AI Explanation Banner (Crucial Requirement) -->
+                    <div class="ai-reason-box mb-3">
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="fa-solid fa-lightbulb text-warning mt-1"></i>
+                            <div>
+                                <strong class="d-block text-primary-dark" style="font-size: 0.78rem;">Why Recommended:</strong>
+                                <span>{{ book.recommendation_reason }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold text-primary-dark mb-1">{{ book.title }}</h5>
+                    <p class="small text-muted mb-2">
+                        <i class="fa-solid fa-user-pen me-1"></i> {{ book.author }}
+                    </p>
+
+                    <p class="book-desc small text-muted mb-3 flex-grow-1">
+                        {{ book.description }}
+                    </p>
+
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="badge badge-category cat-general">
+                            <i class="fa-solid fa-folder me-1"></i> {{ book.category }}
+                        </span>
+                        <span class="badge bg-light text-muted border small">
+                            Score: {{ book.relevance_score }} pts
+                        </span>
+                    </div>
+
+                    <!-- Footer Action -->
+                    <div class="pt-3 border-top mt-auto d-flex justify-content-between align-items-center">
+                        <small class="text-muted">ID: #{{ book.id }} &bull; <strong class="text-success">₹{{ "%.2f"|format(book.price or 450.0) }}</strong></small>
+                        {% if book.available == 1 %}
+                            <form action="{{ url_for('request_book', book_id=book.id) }}" method="POST">
+                                <button type="submit" class="btn btn-sm btn-accent rounded-pill px-3 shadow-sm">
+                                    <i class="fa-solid fa-book-reader me-1"></i> Request Book
+                                </button>
+                            </form>
+                        {% else %}
+                            <button class="btn btn-sm btn-secondary rounded-pill px-3" disabled>
+                                Currently Issued
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+        <div class="text-muted mb-3">
+            <i class="fa-solid fa-wand-magic-sparkles fs-1 opacity-50 text-warning"></i>
+        </div>
+        <h4 class="fw-bold text-dark mb-2">All Recommended Books Already In Your Loans!</h4>
+        <p class="text-muted max-w-md mx-auto mb-4">
+            You're actively exploring all our top suggestions. Return completed books or browse the full catalog to find new titles.
+        </p>
+        <div class="d-flex justify-content-center gap-2">
+            <a href="{{ url_for('books') }}" class="btn btn-accent rounded-pill px-4">
+                Explore Catalog
+            </a>
+            <a href="{{ url_for('my_requests') }}" class="btn btn-outline-secondary rounded-pill px-4">
+                View My Loans
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Academic Viva / Project Explanation Box -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 mt-5 bg-white border-start border-4 border-primary">
+        <h5 class="fw-bold text-primary-dark mb-2 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-graduation-cap text-accent"></i> College Project Viva Notes: AI Recommendation System
+        </h5>
+        <p class="small text-muted mb-2">
+            This module uses a <strong>deterministic Content-Based Filtering algorithm</strong>. The algorithm computes a weighted relevance vector:
+        </p>
+        <ul class="small text-muted mb-0 ps-3">
+            <li><strong>Interest Matching (+12 pts):</strong> Computes overlap between student's registered topics and the target book's domain category.</li>
+            <li><strong>Borrowing History Affinity (+10 pts):</strong> Enhances scoring for subjects where the student has actively borrowed titles previously.</li>
+            <li><strong>Cross-Disciplinary Ontology (+5 pts):</strong> Connects inter-related branches (e.g. Programming is paired with Algorithms and Web Development).</li>
+            <li><strong>Explainability:</strong> Eliminates the "black box" issue by dynamically synthesizing explicit justification reasons for each recommendation.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

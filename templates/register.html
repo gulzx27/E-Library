@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Student Registration - The E-Library{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <div class="brand-icon mx-auto mb-2" style="width: 48px; height: 48px; font-size: 1.25rem;">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">Create Student Account</h3>
+                    <p class="text-light text-opacity-75 small mb-0">Join The E-Library to access books and personalized AI recommendations</p>
+                </div>
+
+                <div class="p-4 p-md-5">
+                    <form method="POST" action="{{ url_for('register') }}" id="registerForm" novalidate>
+                        <!-- Full Name -->
+                        <div class="mb-3">
+                            <label for="name" class="form-label fw-semibold text-dark small">Full Name <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-user"></i></span>
+                                <input type="text" class="form-control border-start-0 ps-0" id="name" name="name" placeholder="e.g. Alex Mercer" value="{{ name or '' }}" required>
+                            </div>
+                        </div>
+
+                        <!-- Email Address -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-semibold text-dark small">College Email Address <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-envelope"></i></span>
+                                <input type="email" class="form-control border-start-0 ps-0" id="email" name="email" placeholder="e.g. alex@college.edu" value="{{ email or '' }}" required>
+                            </div>
+                            <div class="form-text small">Your email will serve as your unique library identifier.</div>
+                        </div>
+
+                        <!-- Passwords -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="password" class="form-label fw-semibold text-dark small">Password <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-lock"></i></span>
+                                    <input type="password" class="form-control border-start-0 ps-0" id="password" name="password" placeholder="At least 6 characters" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="confirm_password" class="form-label fw-semibold text-dark small">Confirm Password <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-lock-check"></i></span>
+                                    <input type="password" class="form-control border-start-0 ps-0" id="confirm_password" name="confirm_password" placeholder="Re-enter password" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Areas of Interest (Crucial for AI Recommendation) -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label fw-semibold text-dark small mb-0">
+                                    <i class="fa-solid fa-brain text-accent me-1"></i> Areas of Academic Interest <span class="text-danger">*</span>
+                                </label>
+                                <small class="text-muted fs-7">Select all that apply</small>
+                            </div>
+                            <p class="text-muted small mb-3">Our Content-Based AI Engine uses these choices to generate your personalized reading list.</p>
+
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for interest in interest_options %}
+                                <label>
+                                    <input type="checkbox" name="interests" value="{{ interest }}" class="interest-checkbox"
+                                    {% if selected_interests and interest in selected_interests %}checked{% endif %}>
+                                    <span class="interest-chip-label">
+                                        <i class="fa-solid fa-check fs-7"></i> {{ interest }}
+                                    </span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-accent w-100 py-2 rounded-pill fw-semibold shadow-sm mb-3">
+                            <i class="fa-solid fa-user-plus me-1"></i> Complete Registration
+                        </button>
+
+                        <div class="text-center small text-muted">
+                            Already registered? <a href="{{ url_for('login') }}" class="text-accent fw-semibold text-decoration-none">Sign In to Account</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}My Purchases & Requests - The E-Library{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="h3 fw-bold text-primary-dark mb-1">
+                <i class="fa-solid fa-bag-shopping text-accent me-2"></i> My Purchases & Book Requests
+            </h1>
+            <p class="text-muted mb-0 small">
+                Track your active book borrowings, issue dates, and return books when you finish reading.
+            </p>
+        </div>
+
+        <div>
+            <a href="{{ url_for('books') }}" class="btn btn-accent btn-sm rounded-pill px-3">
+                <i class="fa-solid fa-plus me-1"></i> Request Another Book
+            </a>
+        </div>
+    </div>
+
+    {% if requests %}
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+        <div class="table-responsive">
+            <table class="table table-custom table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Request ID</th>
+                        <th>Book Title & Price</th>
+                        <th>Author</th>
+                        <th>Category</th>
+                        <th>Issue Date</th>
+                        <th>Due Date (14 Days)</th>
+                        <th>Status</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requests %}
+                    <tr>
+                        <td class="ps-4 font-monospace fw-semibold text-muted">
+                            #REQ-{{ req.request_id }}
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark">{{ req.title }}</div>
+                            <div class="small">
+                                <span class="text-success fw-bold">₹{{ "%.2f"|format(req.price or 450.0) }}</span>
+                                <span class="text-muted ms-1">&bull; Catalog ID: #{{ req.book_id }}</span>
+                            </div>
+                        </td>
+                        <td class="text-muted">
+                            <i class="fa-solid fa-user-pen fs-7 me-1"></i> {{ req.author }}
+                        </td>
+                        <td>
+                            <span class="badge badge-category cat-general">
+                                {{ req.category }}
+                            </span>
+                        </td>
+                        <td class="text-dark small">
+                            <i class="fa-regular fa-calendar-check text-info me-1"></i> {{ req.request_date|format_date }}
+                        </td>
+                        <td class="small">
+                            {% if req.status == 'Active' and req.is_overdue %}
+                                <span class="text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation me-1"></i> {{ req.due_date|format_date }}</span>
+                            {% else %}
+                                <span class="text-dark fw-semibold"><i class="fa-regular fa-clock text-warning me-1"></i> {{ req.due_date|format_date }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if req.status == 'Active' %}
+                                {% if req.is_overdue %}
+                                    <span class="badge bg-danger rounded-pill px-3 py-1 shadow-sm">
+                                        <i class="fa-solid fa-triangle-exclamation me-1"></i> Overdue
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-success bg-opacity-15 text-success border border-success border-opacity-25 rounded-pill px-3 py-1">
+                                        <i class="fa-solid fa-circle-check me-1"></i> Active (In Hand)
+                                    </span>
+                                {% endif %}
+                            {% elif req.status == 'Returned' %}
+                                <span class="badge bg-secondary bg-opacity-15 text-secondary rounded-pill px-3 py-1" title="Returned on {{ req.return_date|format_date }}">
+                                    <i class="fa-solid fa-rotate-left me-1"></i> Returned
+                                </span>
+                            {% else %}
+                                <span class="badge bg-warning bg-opacity-15 text-warning rounded-pill px-3 py-1">
+                                    {{ req.status }}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            {% if req.status == 'Active' %}
+                                <form action="{{ url_for('return_book', request_id=req.request_id) }}" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 btn-confirm-return" data-book-title="{{ req.title }}">
+                                        <i class="fa-solid fa-rotate-left me-1"></i> Return Book
+                                    </button>
+                                </form>
+                            {% else %}
+                                <button class="btn btn-sm btn-light border text-muted rounded-pill px-3" disabled>
+                                    Completed
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+        <div class="text-muted mb-3">
+            <i class="fa-solid fa-clipboard-list fs-1 opacity-50"></i>
+        </div>
+        <h4 class="fw-bold text-dark mb-2">No Book Requests Yet</h4>
+        <p class="text-muted max-w-md mx-auto mb-4">
+            You haven't requested any books yet. Explore our catalog or check your AI recommendations to get started.
+        </p>
+        <div class="d-flex justify-content-center gap-2">
+            <a href="{{ url_for('books') }}" class="btn btn-accent rounded-pill px-4">
+                <i class="fa-solid fa-book-open me-1"></i> Explore Books
+            </a>
+            <a href="{{ url_for('recommendations') }}" class="btn btn-outline-warning rounded-pill px-4">
+                <i class="fa-solid fa-wand-magic-sparkles me-1"></i> AI Suggestions
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

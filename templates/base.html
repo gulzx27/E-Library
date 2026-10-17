@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+<meta name="theme-color" content="#173b6c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="E-Library">
+    <title>{% block title %}The E-Library{% endblock %} | Online Library Management System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-library-dark sticky-top shadow-sm py-2">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('index') }}">
+                <span class="brand-icon"><i class="fa-solid fa-book-bookmark"></i></span>
+                <span class="brand-text">The <span class="text-accent">E-Library</span></span>
+            </a>
+            
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">
+                            <i class="fa-solid fa-house me-1"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'books' %}active{% endif %}" href="{{ url_for('books') }}">
+                            <i class="fa-solid fa-book-open me-1"></i> Books
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'recommendations' %}active{% endif %}" href="{{ url_for('recommendations') }}">
+                            <i class="fa-solid fa-wand-magic-sparkles me-1 text-warning"></i> Recommendations
+                        </a>
+                    </li>
+                    {% if is_logged_in and not is_admin %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">
+                            <i class="fa-solid fa-gauge-high me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'my_requests' %}active{% endif %}" href="{{ url_for('my_requests') }}">
+                            <i class="fa-solid fa-bag-shopping me-1"></i> My Requests
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if is_admin %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint in ['admin_dashboard', 'admin_edit_book'] %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">
+                            <i class="fa-solid fa-shield-halved me-1 text-danger"></i> Admin Portal
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <div class="d-flex align-items-center gap-2">
+                    {% if is_logged_in %}
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center gap-2 rounded-pill px-3 py-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-user-circle fs-5 text-accent"></i>
+                                <span class="fw-medium text-truncate" style="max-width: 140px;">{{ user_name }}</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                                <li class="px-3 py-2 border-bottom">
+                                    <small class="text-muted d-block">Signed in as</small>
+                                    <span class="fw-semibold text-dark text-break">{{ user_email }}</span>
+                                </li>
+                                {% if not is_admin %}
+                                <li>
+                                    <a class="dropdown-item py-2" href="{{ url_for('dashboard') }}">
+                                        <i class="fa-solid fa-gauge me-2 text-primary"></i> User Dashboard
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" href="{{ url_for('my_requests') }}">
+                                        <i class="fa-solid fa-book-reader me-2 text-info"></i> My Requests
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" href="{{ url_for('recommendations') }}">
+                                        <i class="fa-solid fa-wand-magic-sparkles me-2 text-warning"></i> AI Recommendations
+                                    </a>
+                                </li>
+                                {% else %}
+                                <li>
+                                    <a class="dropdown-item py-2" href="{{ url_for('admin_dashboard') }}">
+                                        <i class="fa-solid fa-shield-halved me-2 text-danger"></i> Admin Dashboard
+                                    </a>
+                                </li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item py-2 text-danger" href="{{ url_for('logout') }}">
+                                        <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                            <i class="fa-solid fa-right-to-bracket me-1"></i> Login
+                        </a>
+                        <a href="{{ url_for('register') }}" class="btn btn-accent btn-sm rounded-pill px-3">
+                            <i class="fa-solid fa-user-plus me-1"></i> Register
+                        </a>
+                        <a href="{{ url_for('admin_login') }}" class="btn btn-sm btn-outline-warning rounded-pill px-2" title="Admin Login">
+                            <i class="fa-solid fa-lock"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show shadow-sm border-0 d-flex align-items-center gap-2" role="alert">
+                        {% if category == 'success' %}
+                            <i class="fa-solid fa-circle-check fs-5"></i>
+                        {% elif category == 'danger' or category == 'error' %}
+                            <i class="fa-solid fa-circle-exclamation fs-5"></i>
+                        {% elif category == 'warning' %}
+                            <i class="fa-solid fa-triangle-exclamation fs-5"></i>
+                        {% else %}
+                            <i class="fa-solid fa-circle-info fs-5"></i>
+                        {% endif %}
+                        <div class="flex-grow-1">{{ message }}</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content Body -->
+    <main class="flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-library-dark text-light pt-5 pb-3 mt-5 border-top border-secondary border-opacity-25">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="brand-icon"><i class="fa-solid fa-book-bookmark"></i></span>
+                        <span class="h5 mb-0 fw-bold">The <span class="text-accent">E-Library</span></span>
+                    </div>
+                    <p class="text-light text-opacity-75 small leading-relaxed">
+                        A full-stack Online Library Management System with intelligent content-based AI Book Recommendations. Designed for university students, educators, and library administrators.
+                    </p>
+                    <div class="badge bg-primary bg-opacity-25 text-info px-3 py-2 rounded-pill small">
+                        <i class="fa-solid fa-graduation-cap me-1"></i> B.E. Computer Science & Engineering Capstone Project
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-6">
+                    <h6 class="text-white fw-bold mb-3 text-uppercase fs-7 letter-spacing-1">Quick Links</h6>
+                    <ul class="list-unstyled small text-light text-opacity-75 space-y-2">
+                        <li><a href="{{ url_for('index') }}" class="footer-link">Home</a></li>
+                        <li><a href="{{ url_for('books') }}" class="footer-link">Books Catalog</a></li>
+                        <li><a href="{{ url_for('recommendations') }}" class="footer-link">AI Recommendations</a></li>
+                        <li><a href="{{ url_for('login') }}" class="footer-link">Student Login</a></li>
+                        <li><a href="{{ url_for('admin_login') }}" class="footer-link">Admin Portal</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h6 class="text-white fw-bold mb-3 text-uppercase fs-7 letter-spacing-1">Library Services</h6>
+                    <ul class="list-unstyled small text-light text-opacity-75 space-y-2">
+                        <li><i class="fa-solid fa-clock text-accent me-2"></i> Mon - Sat: 8:30 AM - 8:00 PM</li>
+                        <li><i class="fa-solid fa-calendar-check text-success me-2"></i> 14-Day Standard Book Loan</li>
+                        <li><i class="fa-solid fa-indian-rupee-sign text-warning me-2"></i> Catalog Book Valuation</li>
+                        <li><i class="fa-solid fa-headset text-info me-2"></i> Student Circulation Desk</li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="text-white fw-bold mb-3 text-uppercase fs-7 letter-spacing-1">System Status</h6>
+                    <div class="card bg-white bg-opacity-10 border-0 p-3 rounded-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small text-light text-opacity-75">Service:</span>
+                            <span class="badge bg-success rounded-pill px-2">Operational</span>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small text-light text-opacity-75">AI Algorithm:</span>
+                            <span class="badge bg-info text-dark rounded-pill px-2">Active</span>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="small text-light text-opacity-75">Default Admin:</span>
+                            <span class="badge bg-secondary rounded-pill px-2 font-monospace">admin@elibrary.com</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4 border-secondary border-opacity-25">
+
+            <div class="row align-items-center small text-light text-opacity-50">
+                <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+                    &copy; 2026 The E-Library System. Designed & Developed for CSE College Project.
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <span>Digital Academic Library Management Platform</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Script -->
+    
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% block extra_scripts %}{% endblock %}
+
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+        navigator.serviceWorker.register(
+            "{{ url_for('static', filename='service-worker.js') }}"
+        ).catch(function (error) {
+            console.error("Service worker registration failed:", error);
+        });
+    });
+}
+</script>
+</body>
+</html>
+
+

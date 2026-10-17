@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard - The E-Library{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Welcome Header Banner -->
+    <div class="card bg-library-dark text-white border-0 rounded-4 shadow-sm p-4 p-md-5 mb-4 position-relative overflow-hidden">
+        <div class="row align-items-center position-relative z-1">
+            <div class="col-lg-8">
+                <span class="badge bg-white bg-opacity-10 text-accent border border-info border-opacity-25 px-3 py-1 rounded-pill mb-2">
+                    <i class="fa-solid fa-graduation-cap me-1"></i> Student Portal
+                </span>
+                <h1 class="h2 fw-bold mb-2">Welcome back, {{ user.name }}!</h1>
+                <p class="text-light text-opacity-75 mb-3">
+                    Your personalized academic library workspace is ready. You have <strong>{{ active_requests_count }}</strong> active book loan{% if active_requests_count != 1 %}s{% endif %}.
+                </p>
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <span class="small text-light text-opacity-50">Your Registered Interests:</span>
+                    {% if user.interests %}
+                        {% for int_item in user.interests.split(',') %}
+                            <span class="badge bg-white bg-opacity-15 text-light rounded-pill px-2 py-1 small">
+                                <i class="fa-solid fa-tag fs-7 me-1 text-accent"></i>{{ int_item.strip() }}
+                            </span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a href="{{ url_for('books') }}" class="btn btn-accent rounded-pill px-4 py-2 me-2">
+                    <i class="fa-solid fa-magnifying-glass me-1"></i> Browse Catalog
+                </a>
+                <a href="{{ url_for('recommendations') }}" class="btn btn-outline-light rounded-pill px-3 py-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-warning me-1"></i> AI Matches
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper bg-success bg-opacity-10 text-success">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <div>
+                    <div class="stat-val">{{ total_available_books }}</div>
+                    <div class="stat-label">Available Books in Stacks</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper bg-primary bg-opacity-10 text-primary">
+                    <div class="position-relative">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                        {% if active_requests_count > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="stat-val">{{ active_requests_count }}</div>
+                    <div class="stat-label">Active Issued Books</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper bg-warning bg-opacity-10 text-warning">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div>
+                    <div class="stat-val">{{ recommendations|length }}</div>
+                    <div class="stat-label">Curated Recommendations</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Search Bar -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white">
+        <form action="{{ url_for('books') }}" method="GET" class="row g-2 align-items-center">
+            <div class="col-md-9">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted ps-3">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" name="q" class="form-control bg-light border-start-0" placeholder="Search books by title, author, category or description (e.g. Python, AI, Algorithms)...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-accent w-100 rounded-3">
+                    <i class="fa-solid fa-search me-1"></i> Search Catalog
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="row g-4">
+        <!-- Top AI Recommendations Column -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="p-2 bg-warning bg-opacity-15 text-dark rounded-3 fs-5"><i class="fa-solid fa-brain text-warning"></i></span>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-primary-dark">Recommended for You</h5>
+                            <small class="text-muted">Content-based matching on your interests</small>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('recommendations') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                        View All ({{ recommendations|length }}) <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+
+                {% if recommendations %}
+                <div class="row g-3">
+                    {% for book in recommendations %}
+                    <div class="col-md-6">
+                        <div class="card h-100 border rounded-3 p-3 position-relative recommendation-card shadow-sm hover-shadow">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="ai-pill">
+                                    <i class="fa-solid fa-bolt"></i> {{ book.match_percentage }}% Match
+                                </span>
+                                <div class="d-flex align-items-center gap-1">
+                                    <span class="badge bg-light text-success border border-success border-opacity-25 rounded-pill px-2 py-1 small fw-bold">
+                                        ₹{{ "%.2f"|format(book.price or 450.0) }}
+                                    </span>
+                                    {% if book.available == 1 %}
+                                        <span class="badge badge-available rounded-pill px-2 small">Available</span>
+                                    {% else %}
+                                        <span class="badge badge-unavailable rounded-pill px-2 small">Issued</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <h6 class="fw-bold mb-1 text-primary-dark text-truncate" title="{{ book.title }}">{{ book.title }}</h6>
+                            <p class="small text-muted mb-2"><i class="fa-solid fa-user-pen me-1"></i> {{ book.author }}</p>
+
+                            <div class="ai-reason-box">
+                                <i class="fa-solid fa-info-circle me-1 text-accent"></i> {{ book.recommendation_reason }}
+                            </div>
+
+                            <div class="mt-auto pt-2 d-flex justify-content-between align-items-center">
+                                <span class="badge bg-light text-dark border small">{{ book.category }}</span>
+                                {% if book.available == 1 %}
+                                <form action="{{ url_for('request_book', book_id=book.id) }}" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-accent rounded-pill px-3">
+                                        Request
+                                    </button>
+                                </form>
+                                {% else %}
+                                <button class="btn btn-sm btn-secondary rounded-pill px-2" disabled>Unavailable</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="fa-solid fa-book-open fs-1 text-secondary opacity-50 mb-2"></i>
+                    <p class="mb-0">No new recommendations right now. Explore the catalog to discover more books!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- My Recent Requests Column -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="p-2 bg-primary bg-opacity-10 text-primary rounded-3 fs-5"><i class="fa-solid fa-bag-shopping"></i></span>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-primary-dark">My Recent Requests</h5>
+                            <small class="text-muted">Loans with 14-day due date tracking</small>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('my_requests') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                        History
+                    </a>
+                </div>
+
+                {% if recent_requests %}
+                <div class="list-group list-group-flush border-0">
+                    {% for req in recent_requests %}
+                    <div class="list-group-item px-0 py-3 border-bottom d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="mb-1 fw-bold text-dark">{{ req.title }}</h6>
+                            <div class="small text-muted mb-1">
+                                <span class="badge bg-light text-dark border me-1">{{ req.category }}</span>
+                                {% if req.price %}
+                                <span class="badge bg-light text-success border me-1 fw-bold">₹{{ "%.2f"|format(req.price) }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="small text-muted mb-1">
+                                <span><i class="fa-regular fa-calendar-check text-info me-1"></i> Issued: {{ req.request_date|format_date }}</span>
+                                &bull;
+                                <span><i class="fa-regular fa-clock text-warning me-1"></i> Due: <strong>{{ req.due_date|format_date }}</strong></span>
+                            </div>
+                            {% if req.status == 'Active' %}
+                                {% if req.is_overdue %}
+                                    <span class="badge bg-danger rounded-pill px-2 py-1 small">
+                                        <i class="fa-solid fa-triangle-exclamation me-1"></i> Overdue (Due: {{ req.due_date|format_date }})
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-success bg-opacity-15 text-success rounded-pill px-2 py-1 small">
+                                        <i class="fa-solid fa-circle-check me-1"></i> Active Loan
+                                    </span>
+                                {% endif %}
+                            {% elif req.status == 'Returned' %}
+                                <span class="badge bg-secondary rounded-pill px-2 py-1 small">
+                                    <i class="fa-solid fa-rotate-left me-1"></i> Returned
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary rounded-pill px-2 py-1 small">
+                                    {{ req.status }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            {% if req.status == 'Active' %}
+                            <form action="{{ url_for('return_book', request_id=req.id) }}" method="POST">
+                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 btn-confirm-return" data-book-title="{{ req.title }}">
+                                    Return
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="fa-solid fa-clipboard-list fs-1 text-secondary opacity-50 mb-2"></i>
+                    <p class="mb-2">You haven't requested any books yet.</p>
+                    <a href="{{ url_for('books') }}" class="btn btn-sm btn-accent rounded-pill px-3">
+                        Browse Books & Request
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

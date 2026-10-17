@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Internal Server Error - 500{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="max-w-md mx-auto py-5">
+        <div class="text-danger mb-3">
+            <i class="fa-solid fa-triangle-exclamation display-1"></i>
+        </div>
+        <h1 class="display-5 fw-bold text-primary-dark mb-2">500 - Server Error</h1>
+        <p class="text-muted mb-4">
+            An unexpected error occurred while processing your library request. Our team has been notified.
+        </p>
+        <a href="{{ url_for('index') }}" class="btn btn-accent rounded-pill px-4">
+            <i class="fa-solid fa-house me-1"></i> Return Home
+        </a>
+    </div>
+</div>
+{% endblock %}
