@@ -97,11 +97,10 @@ E-Library/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/E-Library.git
+git clone https://github.com/gulzx27/E-Library.git
 cd E-Library
 ```
 
-Replace `YOUR-USERNAME` with the GitHub account that owns the repository.
 
 ### 2. Create a Virtual Environment
 
