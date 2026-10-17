@@ -10,7 +10,10 @@ from werkzeug.security import generate_password_hash
 
 # Reliable project-relative path to SQLite database (works locally and on PythonAnywhere)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.environ.get('ELIBRARY_DB_PATH', os.path.join(BASE_DIR, 'database.db'))
+DB_PATH = os.environ.get(
+    'ELIBRARY_DB_PATH',
+    '/tmp/database.db' if os.environ.get('RENDER') else os.path.join(BASE_DIR, 'database.db')
+)
 
 
 def get_db_connection():
