@@ -2,7 +2,7 @@
 
 A responsive web-based library management system built using Python, Flask, SQLite, HTML, CSS, and JavaScript. The application helps students discover books, manage borrowing requests, and receive personalized book recommendations based on their interests.
 
-**Live Demo:** https://e-library-app.onrender.com/
+**Live Demo:** [https://e-library-app.onrender.com/](https://e-library-app.onrender.com/)
 
 ## Project Overview
 
@@ -11,6 +11,7 @@ E-Library is a full-stack web application designed to simplify library operation
 ## Features
 
 ### Student Features
+
 - Student registration and login.
 - Personalized dashboard.
 - Browse and search the book catalog.
@@ -22,6 +23,7 @@ E-Library is a full-stack web application designed to simplify library operation
 - Receive book recommendations based on interests and borrowing activity.
 
 ### Administrator Features
+
 - Dedicated admin login.
 - Dashboard with library statistics.
 - Add, edit, and delete books.
@@ -30,9 +32,21 @@ E-Library is a full-stack web application designed to simplify library operation
 - Monitor borrowing requests and returns.
 
 ### Recommendation System
+
 The project includes a content-based recommendation system implemented in Python. It uses information such as student interests, book categories, titles, descriptions, and borrowing activity to calculate relevance scores and provide recommendations.
 
 The recommendation engine runs locally within the Python application and does not require a paid AI API.
+
+## Demo Student Login
+
+Use these demo credentials to explore the student features of the application.
+
+- **Email:** `student@elibrary.com`
+- **Password:** `student123`
+
+**Note:** These credentials are intended for project demonstration and evaluation. If they do not work on the live deployment, register a new student account through the application.
+
+For security, administrator credentials are not published in this README.
 
 ## Technology Stack
 
@@ -83,7 +97,7 @@ E-Library/
     └── 500.html
 ```
 
-*Note: `database.db` is created or used locally and is excluded from the Git repository.*
+*Note: `database.db` is used for local database operations and is excluded from the Git repository.*
 
 ## Requirements
 
@@ -100,7 +114,6 @@ E-Library/
 git clone https://github.com/gulzx27/E-Library.git
 cd E-Library
 ```
-
 
 ### 2. Create a Virtual Environment
 
@@ -132,7 +145,7 @@ python app.py
 
 Open the following address in your browser:
 
-http://127.0.0.1:5000/
+[http://127.0.0.1:5000/](http://127.0.0.1:5000/)
 
 The application uses SQLite for local database operations. Its initialization code creates the required tables and inserts sample books when the database is empty.
 
@@ -141,12 +154,15 @@ The application uses SQLite for local database operations. Its initialization co
 The application uses SQLite with three primary tables.
 
 ### Users
+
 Stores student account information, password hashes, interests, and account creation dates.
 
 ### Books
+
 Stores book titles, authors, categories, descriptions, availability, prices, and creation dates.
 
 ### Requests
+
 Stores student borrowing requests, book references, request dates, due dates, return dates, and borrowing statuses.
 
 Foreign-key relationships connect borrowing records to students and books.
@@ -155,7 +171,7 @@ Foreign-key relationships connect borrowing records to students and books.
 
 The application is deployed using Render.
 
-**Live URL:** https://e-library-app.onrender.com/
+**Live URL:** [https://e-library-app.onrender.com/](https://e-library-app.onrender.com/)
 
 The current deployment uses the following settings:
 
